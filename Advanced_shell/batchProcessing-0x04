@@ -33,13 +33,18 @@ fetch_pokemon() {
     fi
 }
 
-# Start fetching in parallel
+# Start background jobs and store their PIDs
 for pokemon in "${POKEMON_LIST[@]}"; do
     fetch_pokemon "$pokemon" &
 done
 
-# Wait for all background processes to finish
+# Show all background jobs
+echo -e "\nCurrently running jobs:"
+jobs
+
+
+# Wait for all background jobs to finish
 wait
 
-echo "All fetch operations completed."
+echo -e "\nAll fetch operations completed."
 

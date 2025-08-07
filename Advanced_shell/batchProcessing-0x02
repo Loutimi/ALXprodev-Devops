@@ -1,7 +1,11 @@
+
 #!/bin/bash
 
 POKEMON_LIST=(bulbasaur ivysaur venusaur charmander charmeleon)
 ERROR_FILE="errors.txt"
+
+# Ensure clean error file
+> "$ERROR_FILE"
 
 # Loop through each Pokémon and fetch data
 for name in "${POKEMON_LIST[@]}"; do
@@ -9,21 +13,28 @@ for name in "${POKEMON_LIST[@]}"; do
     OUTPUT_FILE="${name}.json"
     ATTEMPT=1
     SUCCESS=0
+
+    echo "Fetching data for $name..."
+
     while [ $ATTEMPT -le 3 ]; do
-	
-        # Use curl to get data, store in JSON file
         curl -s -f "$API_URL" -o "$OUTPUT_FILE"
-	
-        # Check if the file was saved successfully
+
         if [ $? -eq 0 ]; then
+            echo "Saved data to $OUTPUT_FILE"
             SUCCESS=1
             break
+        else
+            echo "Attempt $ATTEMPT failed for $name..."
+            ATTEMPT=$((ATTEMPT+1))
+            sleep 1
         fi
-        ATTEMPT=$((ATTEMPT+1))
-        sleep 1
     done
+
     if [ $SUCCESS -ne 1 ]; then
-        echo "Failed to fetch data for $name after 3 attempts." >> "$ERROR_FILE"
+        echo "Failed to fetch data for $name after 3 attempts at $(date)" >> "$ERROR_FILE"
+        echo "Skipped $name"
     fi
+
+    sleep 1  # To avoid hitting API rate limits
 done
 

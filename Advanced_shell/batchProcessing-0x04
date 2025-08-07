@@ -42,6 +42,7 @@ done
 echo -e "\nCurrently running jobs:"
 jobs
 
+# kill %1
 
 # Wait for all background jobs to finish
 wait
